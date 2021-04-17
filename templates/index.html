@@ -9,12 +9,13 @@
 <body>
  <div class="login" align= "center"  >
 	<h1 style="background-color:SlateBlue;">Welcome to Recommendation system</h1>
+	<h3 align= "left" style="color:#fc0320;"> Test User Name : 08dallas </h3>
     
      <!-- Main Input For Receiving Query to our ML -->
     <form action="/recommand" method="post" >
     	<input type="text" name="User" placeholder="User Name"  required="required" style=' font-size: 15pt; height: 30px; width : 200px;'/>
 
-        <button type="submit" class="btn btn-primary btn-block btn-large" onclick="$('#loading').show();" style=' font-size: 15pt; height: 30px;'>Submit</button>
+        <button type="submit" class="btn btn-primary btn-block btn-large" onclick="$('#loading').show();" style='background-color: #4CAF50; font-size: 15pt; height: 30px;'>Submit</button>
 		<div id="loading" style="display:none; font-size: 140%; font-weight: bold; color:blue;"><img src="loading.gif" alt="" />Loading Please Wait!</div>
     </form>
 

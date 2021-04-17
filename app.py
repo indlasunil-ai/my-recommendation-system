@@ -12,19 +12,19 @@ warnings.filterwarnings("ignore")
 app = Flask(__name__)
 user_recommandation=pd.read_csv('dataset/user_final_rating_cos.csv')
 user_recommandation.set_index('user',inplace=True)
-tfid = pickle.load(open('pickle/tfid.pkl','rb'))
-randomforest = pickle.load(open('pickle/randomforest.pkl','rb'))
-data=pd.read_csv('dataset/sample30_processed.csv')
+# tfid = pickle.load(open('pickle/tfid.pkl','rb'))
+# randomforest = pickle.load(open('pickle/randomforest.pkl','rb'))
+data=pd.read_csv('dataset/train.csv')
 
 def html_code_table(prod_df,table_name,file_name,side):
-    table_style = '<table style="border: 2px solid; float: ' + side + '; width: 40%;">'
+    table_style = '<table border="1" style=" border: 2px solid; float: ' + side + '; width: 50%;">'
     table_head = '<caption style="text-align: left; caption-side: top; font-size: 140%; font-weight: bold; color:red;"><strong>' + table_name + '</strong></caption>'
-    table_head_row = '<tr><th align= "left">Product Name</th></tr>'
+    table_head_row = '<tr><th align= "left">Product Name</th><th align= "left">Positive %</th><th align= "left">Negative %</th></tr>'
     
     html_code = '<div align= "center">' + table_style + table_head + table_head_row
     
-    for i in prod_df:
-        row = '<tr><td>' + str(i) + '</td></tr>'
+    for i in prod_df.index:
+        row =  '<tr><td>' + str(prod_df['product'][i]) + '</td><td>' + str(prod_df['positive'][i]) +'</td><td>' + str(prod_df['negative'][i]) + '</td></tr>'
         html_code = html_code + row
         
     html_code = html_code + '</table>'+'</div>'
@@ -47,23 +47,10 @@ def recommand():
     user=request.form['User'];
     if user in user_recommandation.index:
         result=user_recommandation.loc[user].sort_values(ascending=False)[0:20]
-        prod=data[data['name'].isin(result.index)][['name','processed_text']]
-        for product in prod['name'].unique():
-            df=prod[prod['name']==product][['name','processed_text']]
-            x_test=df['processed_text']
-            X_TFID=tfid.transform(x_test).toarray()
-            prob=randomforest.predict_proba(X_TFID)
-            recommandation=recommandation.append({'product' : product, 'positive' : prob[:,1].sum(), 'negative' : prob[:,0].sum()}, 
-                      ignore_index = True)
-
-         
-        print(recommandation)
-
-        final_recommandation=recommandation[recommandation.positive > recommandation.negative].sort_values('positive',ascending=False)[0:5]
-  
-        
+        prod=data[data['product'].isin(result.index)]
+        final_recommandation=prod.sort_values('positive',ascending=False)[0:5]    
         res = True
-        html_code_table(final_recommandation['product'],'Products you may like','include','center')
+        html_code_table(final_recommandation,'Products you may like','include','center')
         return render_template('index.html', recommended_product=res,user_name=user)
 
     else:

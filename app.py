@@ -6,13 +6,14 @@ import pandas as pd
 import numpy as np
 import pickle
 import warnings
+from time import sleep
 warnings.filterwarnings("ignore")
 
 
 app = Flask(__name__)
 user_recommandation=pd.read_csv('dataset/user_final_rating_cos.csv')
 user_recommandation.set_index('user',inplace=True)
-# tfid = pickle.load(open('pickle/tfid.pkl','rb'))
+# tfid = pickle.load(open('pickle/tfid.pkl','rb')) 
 # randomforest = pickle.load(open('pickle/randomforest.pkl','rb'))
 data=pd.read_csv('dataset/train.csv')
 
@@ -46,6 +47,7 @@ def recommand():
     recommandation = pd.DataFrame(columns = ['product', 'positive','negative'])
     user=request.form['User'];
     if user in user_recommandation.index:
+        sleep(5)
         result=user_recommandation.loc[user].sort_values(ascending=False)[0:20]
         prod=data[data['product'].isin(result.index)]
         final_recommandation=prod.sort_values('positive',ascending=False)[0:5]    
